@@ -196,7 +196,7 @@ app.post('/api/v1/startups/:id/turns', authMiddleware, async (req, res, next) =>
     const result = await prisma.$transaction(async (tx) => {
       // SELECT … FOR UPDATE — prevents concurrent double-advances
       await tx.$queryRawUnsafe(
-        'SELECT id FROM "Startup" WHERE id = $1 FOR UPDATE',
+        'SELECT id FROM "Startup" WHERE id = $1::uuid FOR UPDATE',
         id,
       );
 
