@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useStartup } from '../context/StartupContext';
-import { Link } from 'react-router-dom';
-import {
+import { api } from '../utils/api'; useStartup } from '../context/StartupContext';
+import ErrorBanner from '../components/ErrorBanner';
+
+import { api } from '../utils/api';
   formatMoney,
   ROLE_CONFIG,
 } from '../utils/formatters';
-import {
+import { api } from '../utils/api';
   Users,
   DollarSign,
   Code2,
@@ -19,10 +20,15 @@ import {
 } from 'lucide-react';
 
 export default function EmployeesPage() {
-  const { currentStartup, advanceTurn, isLoading } = useStartup();
+  const { currentStartup, advanceTurn, isLoading, error, clearError, refreshStartup } = useStartup();
   const [selectedFireId, setSelectedFireId] = useState(null);
   const [fireConfirmOpen, setFireConfirmOpen] = useState(false);
   const [firingLoading, setFiringLoading] = useState(false);
+
+  // Show error banner if there is an API error
+  if (error) {
+    return <ErrorBanner message={error} onClose={clearError} />;
+  }
 
   if (!currentStartup) {
     return (
@@ -64,11 +70,14 @@ export default function EmployeesPage() {
     if (!selectedFireId) return;
     setFiringLoading(true);
     try {
-      // Fire through advancing turn or navigating to decisions
-      // Usually fires are submitted as turn decisions
-      setFireConfirmOpen(false);
+      await api.fireEmployee(currentStartup.id, selectedFireId);
+      await refreshStartup();
+    } catch (err) {
+      console.error('Failed to fire employee', err);
     } finally {
+      setFireConfirmOpen(false);
       setFiringLoading(false);
+      setSelectedFireId(null);
     }
   };
 

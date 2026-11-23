@@ -102,6 +102,24 @@ export const api = {
     return request(`/startups/${id}`, { method: 'GET' });
   },
 
+  // ─── Employees ────────────────────────────────────────────────────────
+  async getEmployees(startupId) {
+    return request(`/startups/${startupId}/employees`, { method: 'GET' });
+  },
+
+  async addEmployee(startupId, payload) {
+    return request(`/startups/${startupId}/employees`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async fireEmployee(startupId, employeeId) {
+    return request(`/startups/${startupId}/employees/${employeeId}`, {
+      method: 'DELETE',
+    });
+  },
+
   // Turn advance (idempotent, row-locked on backend)
   async advanceTurn(id, decisions, customKey = null) {
     const idempotencyKey = customKey || (crypto.randomUUID ? crypto.randomUUID() : `turn-${Date.now()}-${Math.random()}`);

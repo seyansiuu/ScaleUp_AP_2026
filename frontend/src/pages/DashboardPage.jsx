@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useStartup } from '../context/StartupContext';
+import ErrorBanner from '../components/ErrorBanner';
 import MetricCard from '../components/MetricCard';
 import CreateStartupModal from '../components/CreateStartupModal';
 import {
@@ -41,6 +42,14 @@ import {
 
 export default function DashboardPage() {
   const { currentStartup, startups, isLoading, error, refreshStartup } = useStartup();
+  // Clear error helper – re-fetches startup to reset error state
+  const clearError = () => {
+    // refreshStartup also clears error in context
+    refreshStartup();
+  };
+
+
+
   const [showCreateModal, setShowCreateModal] = useState(false);
   const navigate = useNavigate();
 
@@ -61,7 +70,11 @@ export default function DashboardPage() {
     );
   }
 
-  // ─── Empty State (No Startups) ─────────────────────────────────
+  // Show error banner if API returned an error
+  if (error) {
+    return <ErrorBanner message={error} onClose={clearError} />;
+  }
+
   if (!isLoading && startups.length === 0) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center">

@@ -11,8 +11,11 @@ export function StartupProvider({ children }) {
     return localStorage.getItem('scaleup_active_startup_id') || null;
   });
   const [currentStartup, setCurrentStartup] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const clearError = () => setError(null);
+
+  // existing code ...
   const [latestTurnResult, setLatestTurnResult] = useState(null);
 
   // Load all startups for current user
@@ -122,13 +125,16 @@ export function StartupProvider({ children }) {
     startups,
     activeStartupId,
     currentStartup,
-    isLoading,
+    // clearError function
+    clearError,
     error,
+
     latestTurnResult,
     selectStartup,
     createStartup,
     advanceTurn,
     clearTurnResult,
+    clearError,
     refreshStartup: () => fetchStartupDetails(activeStartupId),
     refreshAll: fetchStartups,
   };
