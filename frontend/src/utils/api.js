@@ -51,18 +51,30 @@ async function request(endpoint, options = {}) {
     }
 
     let message = 'An error occurred';
+    let details = null;
     if (typeof data === 'object' && data !== null) {
-      if (data.message) {
-        message = data.message;
-      }
-      if (data.errors && Array.isArray(data.errors)) {
-        message = data.errors.map(e => `${e.path}: ${e.message}`).join(', ');
+      message = data.error?.message || data.message || message;
+      details = data.error?.details ?? data.details ?? null;
+      if (Array.isArray(details)) {
+        message = details.map((item) => {
+          const path = Array.isArray(item.path) ? item.path.join('.') : item.path;
+          return path ? `${path}: ${item.message}` : item.message;
+        }).join(', ') || message;
       }
     } else if (typeof data === 'string' && data) {
       message = data;
     }
 
-    throw new ApiError(message, response.status, data);
+    throw new ApiError(message, response.status, details ?? data);
+  }
+
+  // The Express API wraps successful endpoint payloads in { success, data }.
+  // Keep support for unwrapped responses so auth or older endpoints remain compatible.
+  if (data && typeof data === 'object' && Object.hasOwn(data, 'success')) {
+    if (!data.success) {
+      throw new ApiError(data.error?.message || 'Request failed', response.status, data.error?.details ?? null);
+    }
+    return data.data;
   }
 
   return data;

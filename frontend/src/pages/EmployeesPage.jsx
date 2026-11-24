@@ -1,12 +1,8 @@
-import React, { useState } from 'react';
-import { api } from '../utils/api'; useStartup } from '../context/StartupContext';
-import ErrorBanner from '../components/ErrorBanner';
+import { Link } from 'react-router-dom';
 
-import { api } from '../utils/api';
-  formatMoney,
-  ROLE_CONFIG,
-} from '../utils/formatters';
-import { api } from '../utils/api';
+import ErrorBanner from '../components/ErrorBanner';
+import { formatMoney, ROLE_CONFIG } from '../utils/formatters';
+import {
   Users,
   DollarSign,
   Code2,
@@ -14,16 +10,12 @@ import { api } from '../utils/api';
   Megaphone,
   Headphones,
   UserPlus,
-  UserMinus,
   ArrowRight,
-  ShieldAlert,
 } from 'lucide-react';
 
 export default function EmployeesPage() {
   const { currentStartup, advanceTurn, isLoading, error, clearError, refreshStartup } = useStartup();
-  const [selectedFireId, setSelectedFireId] = useState(null);
-  const [fireConfirmOpen, setFireConfirmOpen] = useState(false);
-  const [firingLoading, setFiringLoading] = useState(false);
+
 
   // Show error banner if there is an API error
   if (error) {
@@ -61,25 +53,6 @@ export default function EmployeesPage() {
     SUPPORT: Headphones,
   };
 
-  const handleFireClick = (id) => {
-    setSelectedFireId(id);
-    setFireConfirmOpen(true);
-  };
-
-  const confirmFire = async () => {
-    if (!selectedFireId) return;
-    setFiringLoading(true);
-    try {
-      await api.fireEmployee(currentStartup.id, selectedFireId);
-      await refreshStartup();
-    } catch (err) {
-      console.error('Failed to fire employee', err);
-    } finally {
-      setFireConfirmOpen(false);
-      setFiringLoading(false);
-      setSelectedFireId(null);
-    }
-  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

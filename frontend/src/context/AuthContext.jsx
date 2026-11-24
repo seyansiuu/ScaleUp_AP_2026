@@ -1,5 +1,6 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { api, ApiError } from '../utils/api';
+import { api } from '../utils/api';
 
 const AuthContext = createContext(null);
 
@@ -13,7 +14,9 @@ export function AuthProvider({ children }) {
     }
   });
 
-  const [token, setToken] = useState(() => localStorage.getItem('scaleup_token'));
+  const [token, setToken] = useState(() =>
+    localStorage.getItem('scaleup_token')
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
 
@@ -23,7 +26,10 @@ export function AuthProvider({ children }) {
     };
 
     window.addEventListener('scaleup:unauthorized', handleUnauthorized);
-    return () => window.removeEventListener('scaleup:unauthorized', handleUnauthorized);
+
+    return () => {
+      window.removeEventListener('scaleup:unauthorized', handleUnauthorized);
+    };
   }, []);
 
   // Validate a stored token once on startup so an expired/revoked session
@@ -45,13 +51,22 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     setIsLoading(true);
     setAuthError(null);
+
     try {
       const res = await api.login({ email, password });
-      setUser(res.user);
-      setToken(res.token);
-      localStorage.setItem('scaleup_token', res.token);
-      localStorage.setItem('scaleup_user', JSON.stringify(res.user));
-      return res;
+      const { token, user } = res.data ?? res;
+
+      if (!token || !user) {
+        throw new Error('Login response is missing token or user');
+      }
+
+      setUser(user);
+      setToken(token);
+
+      localStorage.setItem('scaleup_token', token);
+      localStorage.setItem('scaleup_user', JSON.stringify(user));
+
+      return { ...res, token, user };
     } catch (err) {
       setAuthError(err.message || 'Login failed');
       throw err;
@@ -63,13 +78,22 @@ export function AuthProvider({ children }) {
   const register = async (name, email, password) => {
     setIsLoading(true);
     setAuthError(null);
+
     try {
       const res = await api.register({ name, email, password });
-      setUser(res.user);
-      setToken(res.token);
-      localStorage.setItem('scaleup_token', res.token);
-      localStorage.setItem('scaleup_user', JSON.stringify(res.user));
-      return res;
+      const { token, user } = res.data ?? res;
+
+      if (!token || !user) {
+        throw new Error('Registration response is missing token or user');
+      }
+
+      setUser(user);
+      setToken(token);
+
+      localStorage.setItem('scaleup_token', token);
+      localStorage.setItem('scaleup_user', JSON.stringify(user));
+
+      return { ...res, token, user };
     } catch (err) {
       setAuthError(err.message || 'Registration failed');
       throw err;
@@ -87,6 +111,7 @@ export function AuthProvider({ children }) {
     }
     setUser(null);
     setToken(null);
+
     localStorage.removeItem('scaleup_token');
     localStorage.removeItem('scaleup_user');
     localStorage.removeItem('scaleup_active_startup_id');
@@ -106,13 +131,19 @@ export function AuthProvider({ children }) {
     clearError,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
+
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
+
   return context;
 }

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
+    "check": "node --check src/server.js && node --check src/app.js",
     "db:push": "npx prisma db push",
     "db:generate": "npx prisma generate",
     "db:seed": "node prisma/seed.js",

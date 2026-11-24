@@ -41,20 +41,22 @@ import {
 } from 'recharts';
 
 export default function DashboardPage() {
-  const { currentStartup, startups, isLoading, error, refreshStartup } = useStartup();
-  // Clear error helper – re-fetches startup to reset error state
-  const clearError = () => {
-    // refreshStartup also clears error in context
-    refreshStartup();
-  };
-
-
+  const {
+    currentStartup,
+    startups,
+    activeStartupId,
+    isLoading,
+    hasLoadedStartups,
+    error,
+    refreshAll,
+    clearError,
+  } = useStartup();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const navigate = useNavigate();
 
   // ─── Loading State ─────────────────────────────────────────────
-  if (isLoading && !currentStartup) {
+  if (!hasLoadedStartups || (isLoading && startups.length > 0 && !currentStartup)) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="animate-pulse space-y-6">
@@ -70,12 +72,23 @@ export default function DashboardPage() {
     );
   }
 
-  // Show error banner if API returned an error
-  if (error) {
-    return <ErrorBanner message={error} onClose={clearError} />;
+  if (error && !currentStartup) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-16 space-y-4">
+        <ErrorBanner message={error} onClose={clearError} />
+        <button
+          type="button"
+          onClick={() => refreshAll().catch(() => {})}
+          disabled={isLoading}
+          className="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-slate-950 font-bold text-sm"
+        >
+          {isLoading ? 'Retrying…' : 'Retry loading startups'}
+        </button>
+      </div>
+    );
   }
 
-  if (!isLoading && startups.length === 0) {
+  if (startups.length === 0) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center">
         <div className="w-20 h-20 rounded-3xl bg-brand-500/10 border border-brand-500/20 text-brand-400 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-brand-500/10">
@@ -102,7 +115,21 @@ export default function DashboardPage() {
     );
   }
 
-  if (!currentStartup) return null;
+  if (!currentStartup) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-16 space-y-4 text-center">
+        <p className="text-slate-300">The selected startup details are not available yet.</p>
+        <button
+          type="button"
+          onClick={() => refreshAll().catch(() => {})}
+          disabled={isLoading}
+          className="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-slate-950 font-bold text-sm"
+        >
+          {isLoading ? 'Retrying…' : 'Retry loading dashboard'}
+        </button>
+      </div>
+    );
+  }
 
   // ─── Metrics Extraction ─────────────────────────────────────────
   const cashCents = Number(currentStartup.cashCents);
@@ -157,6 +184,19 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      {error && (
+        <div className="space-y-3">
+          <ErrorBanner message={error} onClose={clearError} />
+          <button
+            type="button"
+            onClick={() => refreshAll({ preferredId: activeStartupId }).catch(() => {})}
+            disabled={isLoading}
+            className="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-slate-950 font-bold text-sm"
+          >
+            {isLoading ? 'Retrying…' : 'Retry refresh'}
+          </button>
+        </div>
+      )}
       {/* ─── Top Company Bar ──────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
         <div>
