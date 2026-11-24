@@ -1,0 +1,89 @@
+
+===== q20_baseline | Run 1 | 2026-11-24T15:35:30+0530 =====
+                                                           QUERY PLAN
+---------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2.19..2.20 rows=2 width=37) (actual time=0.060..0.061 rows=2.00 loops=1)
+   Sort Key: (count(e.id)) DESC, s.name
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=8
+   ->  HashAggregate  (cost=2.16..2.18 rows=2 width=37) (actual time=0.039..0.039 rows=2.00 loops=1)
+         Group Key: s.id
+         Batches: 1  Memory Usage: 32kB
+         Buffers: shared hit=2
+         ->  Hash Right Join  (cost=1.06..2.15 rows=3 width=45) (actual time=0.029..0.033 rows=4.00 loops=1)
+               Hash Cond: (e."startupId" = s.id)
+               Buffers: shared hit=2
+               ->  Seq Scan on "Employee" e  (cost=0.00..1.05 rows=5 width=32) (actual time=0.001..0.001 rows=5.00 loops=1)
+                     Buffers: shared hit=1
+               ->  Hash  (cost=1.04..1.04 rows=2 width=29) (actual time=0.016..0.017 rows=2.00 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                     Buffers: shared hit=1
+                     ->  Seq Scan on "Startup" s  (cost=0.00..1.04 rows=2 width=29) (actual time=0.007..0.007 rows=2.00 loops=1)
+                           Filter: (status = 'ACTIVE'::text)
+                           Rows Removed by Filter: 1
+                           Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=195
+ Planning Time: 0.526 ms
+ Execution Time: 0.129 ms
+(24 rows)
+
+
+===== q20_baseline | Run 2 | 2026-11-24T15:35:30+0530 =====
+                                                           QUERY PLAN
+---------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2.19..2.20 rows=2 width=37) (actual time=0.054..0.055 rows=2.00 loops=1)
+   Sort Key: (count(e.id)) DESC, s.name
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=8
+   ->  HashAggregate  (cost=2.16..2.18 rows=2 width=37) (actual time=0.034..0.034 rows=2.00 loops=1)
+         Group Key: s.id
+         Batches: 1  Memory Usage: 32kB
+         Buffers: shared hit=2
+         ->  Hash Right Join  (cost=1.06..2.15 rows=3 width=45) (actual time=0.024..0.028 rows=4.00 loops=1)
+               Hash Cond: (e."startupId" = s.id)
+               Buffers: shared hit=2
+               ->  Seq Scan on "Employee" e  (cost=0.00..1.05 rows=5 width=32) (actual time=0.001..0.002 rows=5.00 loops=1)
+                     Buffers: shared hit=1
+               ->  Hash  (cost=1.04..1.04 rows=2 width=29) (actual time=0.013..0.013 rows=2.00 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                     Buffers: shared hit=1
+                     ->  Seq Scan on "Startup" s  (cost=0.00..1.04 rows=2 width=29) (actual time=0.004..0.004 rows=2.00 loops=1)
+                           Filter: (status = 'ACTIVE'::text)
+                           Rows Removed by Filter: 1
+                           Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=195
+ Planning Time: 0.516 ms
+ Execution Time: 0.124 ms
+(24 rows)
+
+
+===== q20_baseline | Run 3 | 2026-11-24T15:35:30+0530 =====
+                                                           QUERY PLAN
+---------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2.19..2.20 rows=2 width=37) (actual time=0.052..0.053 rows=2.00 loops=1)
+   Sort Key: (count(e.id)) DESC, s.name
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=8
+   ->  HashAggregate  (cost=2.16..2.18 rows=2 width=37) (actual time=0.035..0.036 rows=2.00 loops=1)
+         Group Key: s.id
+         Batches: 1  Memory Usage: 32kB
+         Buffers: shared hit=2
+         ->  Hash Right Join  (cost=1.06..2.15 rows=3 width=45) (actual time=0.028..0.032 rows=4.00 loops=1)
+               Hash Cond: (e."startupId" = s.id)
+               Buffers: shared hit=2
+               ->  Seq Scan on "Employee" e  (cost=0.00..1.05 rows=5 width=32) (actual time=0.001..0.001 rows=5.00 loops=1)
+                     Buffers: shared hit=1
+               ->  Hash  (cost=1.04..1.04 rows=2 width=29) (actual time=0.016..0.016 rows=2.00 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                     Buffers: shared hit=1
+                     ->  Seq Scan on "Startup" s  (cost=0.00..1.04 rows=2 width=29) (actual time=0.004..0.004 rows=2.00 loops=1)
+                           Filter: (status = 'ACTIVE'::text)
+                           Rows Removed by Filter: 1
+                           Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=195
+ Planning Time: 0.386 ms
+ Execution Time: 0.120 ms
+(24 rows)

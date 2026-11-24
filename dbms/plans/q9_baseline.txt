@@ -1,0 +1,68 @@
+
+===== q9_baseline | Run 1 | 2026-11-24T15:35:30+0530 =====
+                                                       QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4.21..4.22 rows=3 width=33) (actual time=0.036..0.036 rows=3.00 loops=1)
+   Sort Key: s.name
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=7
+   ->  Seq Scan on "Startup" s  (cost=0.00..4.19 rows=3 width=33) (actual time=0.011..0.014 rows=3.00 loops=1)
+         Buffers: shared hit=4
+         SubPlan 1
+           ->  Aggregate  (cost=1.04..1.05 rows=1 width=4) (actual time=0.003..0.003 rows=1.00 loops=3)
+                 Buffers: shared hit=3
+                 ->  Seq Scan on "Turn" t  (cost=0.00..1.04 rows=2 width=4) (actual time=0.002..0.002 rows=1.00 loops=3)
+                       Filter: ("startupId" = s.id)
+                       Rows Removed by Filter: 2
+                       Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=167
+ Planning Time: 0.301 ms
+ Execution Time: 0.080 ms
+(17 rows)
+
+
+===== q9_baseline | Run 2 | 2026-11-24T15:35:30+0530 =====
+                                                       QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4.21..4.22 rows=3 width=33) (actual time=0.038..0.038 rows=3.00 loops=1)
+   Sort Key: s.name
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=7
+   ->  Seq Scan on "Startup" s  (cost=0.00..4.19 rows=3 width=33) (actual time=0.011..0.014 rows=3.00 loops=1)
+         Buffers: shared hit=4
+         SubPlan 1
+           ->  Aggregate  (cost=1.04..1.05 rows=1 width=4) (actual time=0.003..0.003 rows=1.00 loops=3)
+                 Buffers: shared hit=3
+                 ->  Seq Scan on "Turn" t  (cost=0.00..1.04 rows=2 width=4) (actual time=0.002..0.002 rows=1.00 loops=3)
+                       Filter: ("startupId" = s.id)
+                       Rows Removed by Filter: 2
+                       Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=167
+ Planning Time: 0.278 ms
+ Execution Time: 0.077 ms
+(17 rows)
+
+
+===== q9_baseline | Run 3 | 2026-11-24T15:35:30+0530 =====
+                                                       QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4.21..4.22 rows=3 width=33) (actual time=0.035..0.036 rows=3.00 loops=1)
+   Sort Key: s.name
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=7
+   ->  Seq Scan on "Startup" s  (cost=0.00..4.19 rows=3 width=33) (actual time=0.012..0.014 rows=3.00 loops=1)
+         Buffers: shared hit=4
+         SubPlan 1
+           ->  Aggregate  (cost=1.04..1.05 rows=1 width=4) (actual time=0.003..0.003 rows=1.00 loops=3)
+                 Buffers: shared hit=3
+                 ->  Seq Scan on "Turn" t  (cost=0.00..1.04 rows=2 width=4) (actual time=0.002..0.002 rows=1.00 loops=3)
+                       Filter: ("startupId" = s.id)
+                       Rows Removed by Filter: 2
+                       Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=167
+ Planning Time: 0.292 ms
+ Execution Time: 0.088 ms
+(17 rows)

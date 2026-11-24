@@ -1,0 +1,53 @@
+
+===== q2_baseline | Run 1 | 2026-11-24T15:35:30+0530 =====
+                                                 QUERY PLAN
+-------------------------------------------------------------------------------------------------------------
+ Sort  (cost=1.05..1.05 rows=2 width=49) (actual time=0.044..0.045 rows=2.00 loops=1)
+   Sort Key: "mrrCents" DESC, "cashCents" DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=4
+   ->  Seq Scan on "Startup"  (cost=0.00..1.04 rows=2 width=49) (actual time=0.013..0.014 rows=2.00 loops=1)
+         Filter: (status = 'ACTIVE'::text)
+         Rows Removed by Filter: 1
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=110
+ Planning Time: 0.595 ms
+ Execution Time: 0.122 ms
+(12 rows)
+
+
+===== q2_baseline | Run 2 | 2026-11-24T15:35:30+0530 =====
+                                                 QUERY PLAN
+-------------------------------------------------------------------------------------------------------------
+ Sort  (cost=1.05..1.05 rows=2 width=49) (actual time=0.030..0.031 rows=2.00 loops=1)
+   Sort Key: "mrrCents" DESC, "cashCents" DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=4
+   ->  Seq Scan on "Startup"  (cost=0.00..1.04 rows=2 width=49) (actual time=0.007..0.008 rows=2.00 loops=1)
+         Filter: (status = 'ACTIVE'::text)
+         Rows Removed by Filter: 1
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=110
+ Planning Time: 0.394 ms
+ Execution Time: 0.110 ms
+(12 rows)
+
+
+===== q2_baseline | Run 3 | 2026-11-24T15:35:30+0530 =====
+                                                 QUERY PLAN
+-------------------------------------------------------------------------------------------------------------
+ Sort  (cost=1.05..1.05 rows=2 width=49) (actual time=0.031..0.031 rows=2.00 loops=1)
+   Sort Key: "mrrCents" DESC, "cashCents" DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=4
+   ->  Seq Scan on "Startup"  (cost=0.00..1.04 rows=2 width=49) (actual time=0.008..0.009 rows=2.00 loops=1)
+         Filter: (status = 'ACTIVE'::text)
+         Rows Removed by Filter: 1
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=110
+ Planning Time: 0.384 ms
+ Execution Time: 0.097 ms
+(12 rows)
