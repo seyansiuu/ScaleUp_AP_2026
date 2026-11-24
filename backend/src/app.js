@@ -308,7 +308,17 @@ emitter.on('turn.completed', ({ startupId, month }) => {
 // Health + Error Handler + Listen
 // ═══════════════════════════════════════════════════════════════════
 
-app.get('/api/v1/health', (_req, res) => res.json({ status: 'ok' }));
+app.get('/api/v1/health', async (_req, res) => {
+  try {
+    // Readiness includes the database/schema used by startup endpoints, not
+    // just whether the Express process can answer HTTP requests.
+    await prisma.$queryRaw`SELECT 1 FROM "User" LIMIT 1`;
+    res.json({ status: 'ok', database: 'connected' });
+  } catch (err) {
+    console.error('[ScaleUp Health] Database unavailable:', err.message);
+    res.status(503).json({ status: 'unavailable', database: 'disconnected' });
+  }
+});
 app.use(errorHandler);
 
 

@@ -51,6 +51,13 @@ export function errorHandler(err, _req, res, _next) {
     return res.status(409).json({ message: 'A record with that key already exists' });
   }
 
+  if (['P1001', 'P1002', 'P1003', 'P1010', 'P1017', 'P2021', 'P2022'].includes(err.code)) {
+    return res.status(503).json({
+      message: 'Database is unavailable or its schema is out of date. Check PostgreSQL and run npm run db:push.',
+      code: 'DATABASE_UNAVAILABLE',
+    });
+  }
+
   // Fallback
   res.status(500).json({ message: 'Internal server error' });
 }
