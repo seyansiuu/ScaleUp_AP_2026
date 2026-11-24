@@ -59,6 +59,7 @@ model Turn {
   id        String   @id @default(uuid()) @db.Uuid
   startupId String   @db.Uuid
   startup   Startup  @relation(fields: [startupId], references: [id])
+  idempotencyKeys IdempotencyKey[]
   month     Int
   snapshot  Json     // Full state snapshot after turn execution
   decisions Json     // Founder decisions that drove this turn
@@ -99,6 +100,7 @@ model IdempotencyKey {
   startupId String   @db.Uuid
   startup   Startup  @relation(fields: [startupId], references: [id])
   turnId    String   @db.Uuid
+  turn      Turn     @relation(fields: [turnId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   response  Json     // Cached response body
   createdAt DateTime @default(now())
 }
