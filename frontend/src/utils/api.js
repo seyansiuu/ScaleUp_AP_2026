@@ -43,8 +43,10 @@ async function request(endpoint, options = {}) {
   }
 
   if (!response.ok) {
-    // If 401 Unauthorized, dispatch auth error event so UI can redirect
-    if (response.status === 401) {
+    // A 401 on a protected call means the session is gone → let the UI sign out.
+    // A 401 from login/register just means "wrong credentials": don't wipe state.
+    const isCredentialCall = endpoint === '/auth/login' || endpoint === '/auth/register';
+    if (response.status === 401 && !isCredentialCall) {
       window.dispatchEvent(new CustomEvent('scaleup:unauthorized'));
     }
 
@@ -71,15 +73,25 @@ export const api = {
   async register({ name, email, password }) {
     return request('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name: String(name).trim(), email: String(email).trim().toLowerCase(), password }),
     });
   },
 
   async login({ email, password }) {
     return request('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email: String(email).trim().toLowerCase(), password }),
     });
+  },
+
+  // Current user — also used to validate a stored token on app start
+  async me() {
+    return request('/auth/me', { method: 'GET' });
+  },
+
+  // Stateless JWT: the server just acknowledges; the client discards the token
+  async logout() {
+    return request('/auth/logout', { method: 'POST' });
   },
 
   // Startups

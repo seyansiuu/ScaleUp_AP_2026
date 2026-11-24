@@ -1,4 +1,5 @@
 import { ZodError } from 'zod';
+import { HttpError } from '../utils/httpError.js';
 
 /**
  * Central Express error handler.
@@ -6,6 +7,19 @@ import { ZodError } from 'zod';
  */
 export function errorHandler(err, _req, res, _next) {
   console.error('[ScaleUp Error]', err.message);
+
+  // Errors we raised on purpose with a client-safe message
+  if (err instanceof HttpError) {
+    return res.status(err.status).json({ message: err.message, ...(err.code ? { code: err.code } : {}) });
+  }
+
+  // Malformed JSON body → 400 (not 500)
+  if (err?.type === 'entity.parse.failed') {
+    return res.status(400).json({ message: 'Malformed JSON in request body' });
+  }
+  if (err?.type === 'entity.too.large') {
+    return res.status(413).json({ message: 'Request body too large' });
+  }
 
   // Zod validation errors → 400
   if (err instanceof ZodError) {

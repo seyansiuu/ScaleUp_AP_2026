@@ -57,6 +57,13 @@ All equity and percentages are stored as **integer basis points** (e.g. `20.00% 
 - **Request Body:** `{ "email": "founder@scaleup.io", "password": "password123" }`
 - **Response (200):** `{ "token": "...", "user": { ... } }`
 
+### 2b. `GET /api/v1/auth/me` and `POST /api/v1/auth/logout`
+- **Headers:** `Authorization: Bearer <token>`
+- `me` → `200 { "user": { "id", "name", "email" } }`. Invalid/expired/missing token → `401`.
+- `logout` → `200`. Tokens are stateless JWTs (7 day expiry), so logout completes when the client discards the token.
+- Emails are trimmed and lower-cased on register/login. Registration passwords: 8–72 characters.
+- Run the auth integration tests (real PostgreSQL): `cd backend && npm test`
+
 ### 3. `GET /api/v1/startups`
 - **Headers:** `Authorization: Bearer <token>`
 - **Response (200):** Array of startups belonging to the authenticated founder.
@@ -115,10 +122,12 @@ cd backend
 # 1. Install dependencies
 npm install
 
-# 2. Configure environment variables in backend/.env:
+# 2. Configure environment variables: copy backend/.env.example to backend/.env
+#    and set a real secret (the server refuses to start without one, min 32 chars):
+#      openssl rand -hex 32
 # DATABASE_URL="postgresql://<user>:<password>@localhost:5432/scaleup"
 # PORT=4000
-# JWT_SECRET="scaleup-secret"
+# JWT_SECRET="<output of openssl rand -hex 32>"
 
 # 3. Apply Prisma database migrations
 npm run db:push

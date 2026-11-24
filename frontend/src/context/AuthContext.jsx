@@ -26,6 +26,22 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('scaleup:unauthorized', handleUnauthorized);
   }, []);
 
+  // Validate a stored token once on startup so an expired/revoked session
+  // never leaves the UI looking logged-in. Only a 401 (handled by the api
+  // client's interceptor) signs the user out; network errors do not.
+  useEffect(() => {
+    if (!localStorage.getItem('scaleup_token')) return;
+    (async () => {
+      try {
+        const res = await api.me();
+        if (res?.user) {
+          setUser(res.user);
+          localStorage.setItem('scaleup_user', JSON.stringify(res.user));
+        }
+      } catch { /* 401 → interceptor already logged out; other errors ignored */ }
+    })();
+  }, []);
+
   const login = async (email, password) => {
     setIsLoading(true);
     setAuthError(null);
@@ -63,6 +79,12 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    // Best-effort server notification; local sign-out must never depend on it.
+    if (localStorage.getItem('scaleup_token')) {
+      Promise.resolve()
+        .then(() => api.logout())
+        .catch(() => {});
+    }
     setUser(null);
     setToken(null);
     localStorage.removeItem('scaleup_token');
